@@ -118,9 +118,14 @@ def load_slice_image(img_name):
 
     return np.array([mca]), np.array([insula])
 
+@st.cache_resource
+def get_autoencoder_model():
+
+    return load_model('ml_model/autoencoder/v1.h5')
+
 def image_to_tabular(mca, insula):
 
-    ae_load_model = load_model('ml_model/autoencoder/v1.h5')
+    ae_load_model = get_autoencoder_model()
     mca = ae_load_model.predict(mca)
     insula = ae_load_model.predict(insula)
 
@@ -142,6 +147,14 @@ def main():
         """,
         unsafe_allow_html=True
     )
+
+    st.markdown(
+        """
+        <style>
+            footer {visibility: hidden;}
+        </style>
+        """,
+    unsafe_allow_html=True)
 
     st.title("LVO Classifier")
     st.sidebar.header("Upload Input Data")
