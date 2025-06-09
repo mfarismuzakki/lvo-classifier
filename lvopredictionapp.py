@@ -73,8 +73,6 @@ def save_slices(image_data, output_path, plane, img):
 
     slice_data = apply_windowing(slice_data, wl, ww)
 
-    print(output_path)
-
     # Create a new figure with a balanced aspect ratio and higher dpi
     plt.figure(figsize=(8, 8 * aspect_ratio), dpi=dpi)
     plt.imshow(slice_data.T, cmap='gray', origin='lower', aspect='auto')
@@ -159,22 +157,27 @@ def main():
     st.sidebar.header("Upload Input Data")
 
     # Pilihan tipe model
-    model_type = st.sidebar.selectbox("Model Type", ["Model 1 (Acc 88%)", "Model 2 (Acc 81%)"])
+    model_type = st.sidebar.selectbox("Model Type", ["Model 1 (Acc 94%)", "Model 2 (Acc 90%)"])
     uploaded_files = st.sidebar.file_uploader("Upload DICOM Files", accept_multiple_files=True)
 
     st.sidebar.subheader("Tabular Input Data")
 
     # Daftar kolom
-    columns_all = ['jenis_kelamin', 'usia', 'dm', 'gagal_jantung', 'hipertensi', 'af', 
-                   'hemiparesis', 'hemihipestesi_parestesia', 'paresis_nervus_kranialis', 
-                   'deviasi_konjugat', 'afasia', 'nihss_in', 'ddimer', 'gcs_code_(kesadaran_menurun)']
-    columns_selected = ['nihss_in']
+    columns_all = ['jenis_kelamin', 'usia', 'dm', 'gagal_jantung', 'hipertensi', 
+        'af', 'hemiparesis', 'hemihipestesi_parestesia', 'paresis_nervus_kranialis',
+        'deviasi_konjugat', 'afasia', 'nihss_in', 'ddimer', 'at', 'hct', 'fibrinogen',
+        'leukosit', 'neutrofil', 'limfosit', 'nc', 'lc', 'nlr', 'gds', 'gdp',
+        'hba1c', 'hyperdense', 'insullar_ribbon',
+        'gcs_code_(kesadaran_menurun)']
+
+    columns_selected = ['nihss_in_cat', 'insullar_ribbon', 'hemiparesis',
+        'deviasi_konjugat', 'gcs_code_(kesadaran_menurun)', 'afasia']
 
     # Pilih kolom berdasarkan tipe model
-    selected_columns = columns_all if model_type == "Model 1 (Acc 88%)" else columns_selected
+    selected_columns = columns_all if model_type == "Model 1 (Acc 94%)" else columns_selected
 
     # Kolom boolean untuk "Ya"/"Tidak"
-    boolean_columns = ['dm', 'gagal_jantung', 'hipertensi', 'af', 'hemiparesis', 
+    boolean_columns = ['dm', 'gagal_jantung', 'hyperdense', 'hipertensi', 'af', 'hemiparesis', 
                        'hemihipestesi_parestesia', 'paresis_nervus_kranialis', 
                        'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)']
 
@@ -248,12 +251,9 @@ def main():
                 shutil.rmtree(f'temporary_ct_data/dicom/{random_name}')
                 os.remove(nifti_path)
             
-            print(columns_selected)
-            print(final_input)
-
             # Pilih model berdasarkan tipe
-            model_path = 'ml_model/random_forest/random_forest_all_column.sav' if model_type == "Model 1 (Acc 88%)" else 'ml_model/random_forest/random_forest_selected_column.sav'
-            compliment_data = pd.DataFrame([final_input], columns=columns_all if model_type == "Model 1 (Acc 88%)" else columns_selected)
+            model_path = 'ml_model/random_forest/lda_v1.sav' if model_type == "Model 1 (Acc 94%)" else 'ml_model/random_forest/lda_v1.1.sav'
+            compliment_data = pd.DataFrame([final_input], columns=columns_all if model_type == "Model 1 (Acc 94%)" else columns_selected)
             result, result_proba = classify(compliment_data, model_path)
 
             if result is not None:
