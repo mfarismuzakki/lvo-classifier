@@ -93,6 +93,8 @@ def classify(compliment_data, model_path):
         model = joblib.load(model_path)
         result = model.predict(compliment_data)
         result_proba = model.predict_proba(compliment_data)
+
+        print(result[0], result_proba)
         return result[0], result_proba
     except Exception as e:
         st.error(f"Error in classification: {e}")
@@ -165,12 +167,12 @@ def main():
     # Daftar kolom
     columns_all = ['jenis_kelamin', 'usia', 'dm', 'gagal_jantung', 'hipertensi', 
         'af', 'hemiparesis', 'hemihipestesi_parestesia', 'paresis_nervus_kranialis',
-        'deviasi_konjugat', 'afasia', 'nihss_in', 'ddimer', 'at', 'hct', 'fibrinogen',
+        'deviasi_konjugat', 'afasia', 'nihss_in_(di_atas_6)', 'ddimer', 'at', 'hct', 'fibrinogen',
         'leukosit', 'neutrofil', 'limfosit', 'nc', 'lc', 'nlr', 'gds', 'gdp',
         'hba1c', 'hyperdense', 'insullar_ribbon',
         'gcs_code_(kesadaran_menurun)']
 
-    columns_selected = ['nihss_in_cat', 'insullar_ribbon', 'hemiparesis',
+    columns_selected = ['nihss_in_(di_atas_6)', 'insullar_ribbon', 'hemiparesis',
         'deviasi_konjugat', 'gcs_code_(kesadaran_menurun)', 'afasia']
 
     # Pilih kolom berdasarkan tipe model
@@ -179,7 +181,8 @@ def main():
     # Kolom boolean untuk "Ya"/"Tidak"
     boolean_columns = ['dm', 'gagal_jantung', 'hyperdense', 'hipertensi', 'af', 'hemiparesis', 
                        'hemihipestesi_parestesia', 'paresis_nervus_kranialis', 
-                       'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)']
+                       'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)',
+                       'nihss_in_(di_atas_6)']
 
     # Input jenis_kelamin
     if 'jenis_kelamin' in selected_columns:
@@ -204,7 +207,7 @@ def main():
 
     # Pastikan kolom input sesuai dengan urutan di columns_all atau columns_selected
     final_input = []
-    for col in (columns_all if model_type == "Model 1 (Acc 88%)" else columns_selected):
+    for col in (columns_all if model_type == "Model 1 (Acc 94%)" else columns_selected):
         if col in tabular_input:
             final_input.append(tabular_input[col])
         else:
@@ -245,14 +248,14 @@ def main():
                 columns_all.append('ct_insula')
                 columns_selected.append('ct_mca')
                 columns_selected.append('ct_insula')
-                final_input.append(mca_tab)
-                final_input.append(insula_tab)
+                final_input.append(mca_tab[0])
+                final_input.append(insula_tab[0])
 
                 shutil.rmtree(f'temporary_ct_data/dicom/{random_name}')
                 os.remove(nifti_path)
             
             # Pilih model berdasarkan tipe
-            model_path = 'ml_model/random_forest/lda_v1.sav' if model_type == "Model 1 (Acc 94%)" else 'ml_model/random_forest/lda_v1.1.sav'
+            model_path = 'ml_model/lda/lda_v1.sav' if model_type == "Model 1 (Acc 94%)" else 'ml_model/lda/lda_v1.1.sav'
             compliment_data = pd.DataFrame([final_input], columns=columns_all if model_type == "Model 1 (Acc 94%)" else columns_selected)
             result, result_proba = classify(compliment_data, model_path)
 
