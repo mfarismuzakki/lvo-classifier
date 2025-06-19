@@ -12,6 +12,7 @@ from keras.models import load_model
 import joblib
 import dicom2nifti
 import plotly.graph_objects as go
+from modelconfig import MODEL_CONFIGS
 
 # Streamlit app configuration
 st.set_page_config(
@@ -22,9 +23,9 @@ st.set_page_config(
     menu_items={"About": "A CT scan classifier powered by machine learning."}
 )
 
-# Utility functions
+# ---------- Utility Functions ----------
+
 def save_temporary_dicom(uploaded_files, name):
-    """Save uploaded DICOM files temporarily."""
     try:
         default_path = f'temporary_ct_data/dicom/{name}'
         os.makedirs(default_path, exist_ok=True)
@@ -37,7 +38,6 @@ def save_temporary_dicom(uploaded_files, name):
         return None
 
 def convert_dicom_to_nifti(name):
-    """Convert DICOM files to NIfTI format."""
     try:
         dicom_path = f'temporary_ct_data/dicom/{name}/'
         nifti_path = f'temporary_ct_data/nifti/{name}/'
@@ -55,25 +55,14 @@ def convert_dicom_to_nifti(name):
 def save_slices(image_data, output_path, plane, img):
     wl = 40
     ww = 80
+    slice_index = image_data.shape[2] // 3 + 3 if plane == 'mca' else image_data.shape[2] // 2
+    slice_data = image_data[:, :, slice_index]
 
-    if plane == 'mca':
-        # Geser slice index MCA ke atas
-        slice_index = image_data.shape[2] // 3 + 3  # Menambahkan 5 slice ke atas
-        slice_data = image_data[:, :, slice_index]
-    elif plane == 'insula':
-        slice_index = image_data.shape[2] // 2
-        slice_data = image_data[:, :, slice_index]
-
-    # Calculate the aspect ratio to balance the dimensions
     x_dim, y_dim, _ = img.header.get_zooms()
     aspect_ratio = y_dim / x_dim
-
-    # Increase the dpi to improve the resolution
     dpi = 200
-
     slice_data = apply_windowing(slice_data, wl, ww)
 
-    # Create a new figure with a balanced aspect ratio and higher dpi
     plt.figure(figsize=(8, 8 * aspect_ratio), dpi=dpi)
     plt.imshow(slice_data.T, cmap='gray', origin='lower', aspect='auto')
     plt.axis('off')
@@ -81,230 +70,154 @@ def save_slices(image_data, output_path, plane, img):
     plt.close()
 
 def apply_windowing(slice_data, wl, ww):
-    """Apply window level and width to the slice."""
     min_val = wl - ww / 2
     max_val = wl + ww / 2
     slice_data = np.clip(slice_data, min_val, max_val)
     return (slice_data - min_val) / (max_val - min_val)
 
 def classify(compliment_data, model_path):
-    """Classify the input data."""
     try:
         model = joblib.load(model_path)
         result = model.predict(compliment_data)
         result_proba = model.predict_proba(compliment_data)
-
-        print(result[0], result_proba)
         return result[0], result_proba
     except Exception as e:
         st.error(f"Error in classification: {e}")
         return None, None
 
 def load_slice_image(img_name):
-
     mca = cv2.imread(f'temporary_ct_data/slices/mca_{img_name}.png')
-    mca = cv2.resize(mca, (128, 128))
-    mca = mca.astype('float32')
-    mca = (mca / 255.0).flatten()
-
     insula = cv2.imread(f'temporary_ct_data/slices/insula_{img_name}.png')
-    insula = cv2.resize(insula, (128, 128))
-    insula = insula.astype('float32')
-    insula = (insula / 255.0).flatten()
-
+    mca = cv2.resize(mca, (128, 128)).astype('float32') / 255.0
+    insula = cv2.resize(insula, (128, 128)).astype('float32') / 255.0
     os.remove(f'temporary_ct_data/slices/mca_{img_name}.png')
     os.remove(f'temporary_ct_data/slices/insula_{img_name}.png')
-
-    return np.array([mca]), np.array([insula])
+    return np.array([mca.flatten()]), np.array([insula.flatten()])
 
 @st.cache_resource
 def get_autoencoder_model():
-
     return load_model('ml_model/autoencoder/v1.h5')
 
 def image_to_tabular(mca, insula):
+    ae = get_autoencoder_model()
+    return ae.predict(mca), ae.predict(insula)
 
-    ae_load_model = get_autoencoder_model()
-    mca = ae_load_model.predict(mca)
-    insula = ae_load_model.predict(insula)
-
-    return mca, insula
-
-# Streamlit UI
+# ---------- Main App ----------
 def main():
-
-    # logo_path = "images/fkui_logo.png"
-    # st.image(logo_path, use_container_width=True)
-    st.markdown(
-        f"""
+    st.markdown("""
         <div style="display: flex; align-items: center; background-color: #778899; padding: 10px; border-radius: 5px;">
             <div>
                 <h3 style="margin: 0; color: white;">Fakultas Kedokteran, Universitas Indonesia</h3>
                 <h5 style="margin: 0; color: white;">dr. Mohammad Kurniawan, Sp.S (K), Msc, FICA</h5>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        """
-        <style>
-            footer {visibility: hidden;}
-        </style>
-        """,
-    unsafe_allow_html=True)
-
+        """, unsafe_allow_html=True)
+    st.markdown("<style>footer {visibility: hidden;}</style>", unsafe_allow_html=True)
     st.title("LVO Classifier")
     st.sidebar.header("Upload Input Data")
 
-    # Pilihan tipe model
-    model_type = st.sidebar.selectbox("Model Type", ["Model 1 (Acc 94%)", "Model 2 (Acc 90%)"])
-    uploaded_files = st.sidebar.file_uploader("Upload DICOM Files", accept_multiple_files=True)
+    # --- Model selection ---
+    model_names = [m['name'] for m in MODEL_CONFIGS]
+    model_name = st.sidebar.selectbox("Model Type", model_names)
+    selected_model = next((m for m in MODEL_CONFIGS if m['name'] == model_name), None)
+
+    if not selected_model:
+        st.error("Model config not found.")
+        return
+
+    columns_selected = selected_model["columns"]
+    model_path = selected_model["path"]
+
+    uploaded_files = None
+    if selected_model.get("require_ct", True):
+        uploaded_files = st.sidebar.file_uploader("Upload DICOM Files", accept_multiple_files=True)
 
     st.sidebar.subheader("Tabular Input Data")
 
-    # Daftar kolom
-    columns_all = ['jenis_kelamin', 'usia', 'dm', 'gagal_jantung', 'hipertensi', 
-        'af', 'hemiparesis', 'hemihipestesi_parestesia', 'paresis_nervus_kranialis',
-        'deviasi_konjugat', 'afasia', 'nihss_in_(di_atas_6)', 'ddimer', 'at', 'hct', 'fibrinogen',
-        'leukosit', 'neutrofil', 'limfosit', 'nc', 'lc', 'nlr', 'gds', 'gdp',
-        'hba1c', 'hyperdense', 'insullar_ribbon',
-        'gcs_code_(kesadaran_menurun)']
+    # --- Input Data ---
+    boolean_columns = [
+        'dm', 'gagal_jantung', 'hyperdense', 'hipertensi', 'af', 'hemiparesis',
+        'hemihipestesi_parestesia', 'paresis_nervus_kranialis', 'deviasi_konjugat',
+        'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in_(di_atas_6)', 'nihss_in_(di_atas_10)'
+    ]
 
-    columns_selected = ['nihss_in_(di_atas_6)', 'insullar_ribbon', 'hemiparesis',
-        'deviasi_konjugat', 'gcs_code_(kesadaran_menurun)', 'afasia']
+    tabular_input = {}
+    if 'jenis_kelamin' in columns_selected:
+        jk = st.sidebar.selectbox("Jenis kelamin", ["Pria", "Wanita"])
+        tabular_input['jenis_kelamin'] = 1 if jk == "Pria" else 0
 
-    # Pilih kolom berdasarkan tipe model
-    selected_columns = columns_all if model_type == "Model 1 (Acc 94%)" else columns_selected
+    for col in columns_selected:
+        if col == 'jenis_kelamin':
+            continue
+        if col in boolean_columns:
+            val = st.sidebar.selectbox(col.replace('_', ' ').capitalize(), ["Ya", "Tidak"])
+            tabular_input[col] = 1 if val == "Ya" else 0
+        elif not col.startswith('ct_'):
+            tabular_input[col] = st.sidebar.number_input(col.replace('_', ' ').capitalize(), value=0.0)
 
-    # Kolom boolean untuk "Ya"/"Tidak"
-    boolean_columns = ['dm', 'gagal_jantung', 'hyperdense', 'hipertensi', 'af', 'hemiparesis', 
-                       'hemihipestesi_parestesia', 'paresis_nervus_kranialis', 
-                       'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)',
-                       'nihss_in_(di_atas_6)']
-
-    # Input jenis_kelamin
-    if 'jenis_kelamin' in selected_columns:
-        jenis_kelamin = st.sidebar.selectbox("Jenis kelamin", options=["Pria", "Wanita"])
-
-    # Input kolom boolean
-    boolean_inputs = {}
-    for col in boolean_columns:
-        if col in selected_columns:
-            boolean_inputs[col] = st.sidebar.selectbox(col.replace('_', ' ').capitalize(), options=["Ya", "Tidak"])
-
-    # Input kolom numerik
-    numerical_columns = [col for col in selected_columns if col not in boolean_columns + ['jenis_kelamin']]
-    numerical_inputs = {col: st.sidebar.number_input(col.replace('_', ' ').capitalize(), value=0.0) for col in numerical_columns}
-
-    # Gabungkan semua input
-    tabular_input = {**numerical_inputs}
-    if 'jenis_kelamin' in selected_columns:
-        tabular_input['jenis_kelamin'] = 1 if jenis_kelamin == "Pria" else 0
-    for col, value in boolean_inputs.items():
-        tabular_input[col] = 1 if value == "Ya" else 0
-
-    # Pastikan kolom input sesuai dengan urutan di columns_all atau columns_selected
-    final_input = []
-    for col in (columns_all if model_type == "Model 1 (Acc 94%)" else columns_selected):
-        if col in tabular_input:
-            final_input.append(tabular_input[col])
-        else:
-            # Jika kolom tidak diisi, beri nilai default (0 atau nilai lain yang sesuai)
-            final_input.append(0)
-
-    # Tombol untuk klasifikasi
+    # --- Classification ---
     if st.sidebar.button("Classify"):
         with st.spinner("Processing..."):
-            random_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
-            dicom_path = nifti_path = None
+            name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
 
-            dicom_path = save_temporary_dicom(uploaded_files, random_name)
-            if dicom_path:
-                nifti_path = convert_dicom_to_nifti(random_name)
-            if nifti_path:
-                img = nib.load(nifti_path)
-                image_data = img.get_fdata()
+            mca_tab = insula_tab = None
+            if selected_model.get("require_ct", True) and uploaded_files:
+                dicom_path = save_temporary_dicom(uploaded_files, name)
+                nifti_path = convert_dicom_to_nifti(name)
+                if nifti_path:
+                    img = nib.load(nifti_path)
+                    image_data = img.get_fdata()
+                    os.makedirs('temporary_ct_data/slices', exist_ok=True)
 
-                if not os.path.exists('temporary_ct_data/slices'):
-                    os.makedirs('temporary_ct_data/slices')
+                    save_slices(image_data, f'temporary_ct_data/slices/mca_{name}.png', 'mca', img)
+                    save_slices(image_data, f'temporary_ct_data/slices/insula_{name}.png', 'insula', img)
 
-                # Simpan slice MCA dan insula
-                save_slices(image_data, f'temporary_ct_data/slices/mca_{random_name}.png', 'mca', img)
-                save_slices(image_data, f'temporary_ct_data/slices/insula_{random_name}.png', 'insula', img)
+                    st.subheader("Generated Slices")
+                    col1, col2 = st.columns(2)
+                    col1.image(f'temporary_ct_data/slices/mca_{name}.png', caption="MCA Slice", use_container_width=True)
+                    col2.image(f'temporary_ct_data/slices/insula_{name}.png', caption="Insula Slice", use_container_width=True)
 
-                st.subheader("Generated Slices")
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.image(f'temporary_ct_data/slices/mca_{random_name}.png', caption="MCA Slice", use_container_width=True)
-                with col2:
-                    st.image(f'temporary_ct_data/slices/insula_{random_name}.png', caption="Insula Slice", use_container_width=True)
+                    mca, insula = load_slice_image(name)
+                    mca_tab, insula_tab = image_to_tabular(mca, insula)
 
-                mca, insula = load_slice_image(random_name)
-                mca_tab, insula_tab = image_to_tabular(mca, insula)
+                    shutil.rmtree(f'temporary_ct_data/dicom/{name}', ignore_errors=True)
+                    os.remove(nifti_path)
 
-                columns_all.append('ct_mca')
-                columns_all.append('ct_insula')
-                columns_selected.append('ct_mca')
-                columns_selected.append('ct_insula')
-                final_input.append(mca_tab[0])
-                final_input.append(insula_tab[0])
+            # Final input
+            final_input = []
+            for col in columns_selected:
+                if col == 'ct_mca':
+                    final_input.append(mca_tab[0] if mca_tab is not None else 0)
+                elif col == 'ct_insula':
+                    final_input.append(insula_tab[0] if insula_tab is not None else 0)
+                else:
+                    final_input.append(tabular_input.get(col, 0))
 
-                shutil.rmtree(f'temporary_ct_data/dicom/{random_name}')
-                os.remove(nifti_path)
-            
-            # Pilih model berdasarkan tipe
-            model_path = 'ml_model/lda/lda_v1.sav' if model_type == "Model 1 (Acc 94%)" else 'ml_model/lda/lda_v1.1.sav'
-            compliment_data = pd.DataFrame([final_input], columns=columns_all if model_type == "Model 1 (Acc 94%)" else columns_selected)
-            result, result_proba = classify(compliment_data, model_path)
+            df_input = pd.DataFrame([final_input], columns=columns_selected)
+            result, result_proba = classify(df_input, model_path)
 
             if result is not None:
                 labels = ["Tidak LVO", "LVO"]
                 values = [p * 100 for p in result_proba[0]]
-
                 classification_label = "Ya, terdapat kemungkinan LVO" if result == 1 else "Tidak, LVO tidak terdeteksi"
 
-                # Menampilkan kesimpulan utama
                 st.header(f"Hasil Klasifikasi: **{classification_label}**")
-                
-                # Menambahkan deskripsi kesimpulan
-                if result == 1:
-                    st.markdown(f"""
-                    **Kesimpulan:** Hasil klasifikasi menunjukkan **LVO terdeteksi** dengan probabilitas sebesar **{values[1]:.2f}%**.
-                    """)
-                else:
-                    st.markdown(f"""
-                    **Kesimpulan:** Hasil klasifikasi menunjukkan **tidak ada LVO terdeteksi** dengan probabilitas sebesar **{values[0]:.2f}%**.
-                    """)
+                st.markdown(f"""
+                **Kesimpulan:** Hasil klasifikasi menunjukkan **{"LVO terdeteksi" if result == 1 else "tidak ada LVO terdeteksi"}**
+                dengan probabilitas sebesar **{values[result]:.2f}%**.
+                """)
 
-                # Tampilkan probabilitas klasifikasi
                 st.subheader("Probabilitas Deteksi LVO")
-                if result_proba is not None:
-                    # Data untuk donut chart
-                    # Membuat donut chart dengan Plotly
-                    fig = go.Figure(data=[go.Pie(
-                        labels=labels,
-                        values=values,
-                        hole=0.6,  # Membuat pie chart menjadi donut
-                        textinfo='label+percent',
-                        hoverinfo='label+value',
-                        marker=dict(colors=["#636EFA", "#EF553B"], line=dict(color="#FFFFFF", width=2))
-                    )])
+                fig = go.Figure(data=[go.Pie(
+                    labels=labels,
+                    values=values,
+                    hole=0.6,
+                    textinfo='label+percent',
+                    hoverinfo='label+value',
+                    marker=dict(colors=["#636EFA", "#EF553B"], line=dict(color="#FFFFFF", width=2))
+                )])
+                fig.update_layout(title="Distribusi Probabilitas Klasifikasi", annotations=[dict(text="LVO", x=0.5, y=0.5, font_size=20, showarrow=False)])
+                st.plotly_chart(fig, use_container_width=True)
 
-                    fig.update_layout(
-                        title="Distribusi Probabilitas Klasifikasi",
-                        annotations=[dict(
-                            text="LVO",
-                            x=0.5,
-                            y=0.5,
-                            font_size=20,
-                            showarrow=False
-                        )]
-                    )
-
-                    # Render chart di Streamlit
-                    st.plotly_chart(fig, use_container_width=True)
-                    
 if __name__ == "__main__":
     main()
