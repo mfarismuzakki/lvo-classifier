@@ -21,8 +21,8 @@ MODEL_CONFIGS = [
     #     ]
     # },
     {
-        "name": "Model 1 MLP (Acc 35%)",
-        "path": "ml_model/mlp/mlp_1.sav",
+        "name": "Model 1 Random Forest (Acc 93.55%)",
+        "path": "ml_model/random_forest/random_forest_1.sav",
         "require_ct": True,
         "columns": [
             'usia', 'jenis_kelamin', 'dm',
@@ -34,9 +34,9 @@ MODEL_CONFIGS = [
         ]
     },
     {
-        "name": "Model 2 MLP (Acc 58%)",
+        "name": "Model 2 Random Forest (Acc 83.87%)",
         "require_ct": True,
-        "path": "ml_model/mlp/mlp_2.sav",
+        "path": "ml_model/random_forest/random_forest_2.sav",
         "columns": [
             'usia', 'jenis_kelamin', 'dm',
             'gagal_jantung', 'hipertensi', 'af', 'hemiparesis',
@@ -46,9 +46,9 @@ MODEL_CONFIGS = [
         ]
     },
     {
-        "name": "Model 7 MLP (Acc 58%)",
+        "name": "Model 7 Random Forest (Acc 74.19%)",
         "require_ct": True,
-        "path": "ml_model/mlp/mlp_7.sav",
+        "path": "ml_model/random_forest/random_forest_7.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
             'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in_(di_atas_10)',
@@ -56,18 +56,18 @@ MODEL_CONFIGS = [
         ]
     },
     {
-        "name": "Model 8b MLP (Acc 80%)",
+        "name": "Model 8b Random Forest (Acc 80.65%)",
         "require_ct": False,
-        "path": "ml_model/mlp/mlp_8b.sav",
+        "path": "ml_model/random_forest/random_forest_8b.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
             'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)'
         ]
     },
     {
-        "name": "Model 9 MLP (Acc 77%)",
+        "name": "Model 9 Random Forest (Acc 64.52%)",
         "require_ct": False,
-        "path": "ml_model/mlp/mlp_9.sav",
+        "path": "ml_model/random_forest/random_forest_9.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
             'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in_(di_atas_10)'
