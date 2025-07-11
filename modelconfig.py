@@ -48,7 +48,7 @@ MODEL_CONFIGS = [
     {
         "name": "Model 7a RF (Acc 83.87%)",
         "require_ct": True,
-        "path": "ml_model/random_forest/random_forest_7.sav",
+        "path": "ml_model/random_forest/random_forest_7a.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
             'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in_(di_atas_10)',
