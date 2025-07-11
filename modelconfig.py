@@ -29,7 +29,7 @@ MODEL_CONFIGS = [
             'gagal_jantung', 'hipertensi', 'af', 'hemiparesis',
             'hemihipestesi_parestesia', 'paresis_nervus_kranialis',
             'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
-            'ddimer', 'hct', 'at', 'hyperdense', 'insullar_ribbon',
+            'ddimer_(di_atas_500)', 'hct', 'at', 'hyperdense', 'insullar_ribbon',
             'ct_mca', 'ct_insula'
         ]
     },
@@ -42,7 +42,7 @@ MODEL_CONFIGS = [
             'gagal_jantung', 'hipertensi', 'af', 'hemiparesis',
             'hemihipestesi_parestesia', 'paresis_nervus_kranialis',
             'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
-            'ddimer', 'hct', 'at', 'ct_mca', 'ct_insula'
+            'ddimer_(di_atas_500)', 'hct', 'at', 'ct_mca', 'ct_insula'
         ]
     },
     {
@@ -51,7 +51,7 @@ MODEL_CONFIGS = [
         "path": "ml_model/random_forest/random_forest_7a.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
-            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
+            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in_(di_atas_10)',
             'at', 'hct', 'ct_mca', 'ct_insula'
         ]
     },
@@ -70,7 +70,7 @@ MODEL_CONFIGS = [
         "path": "ml_model/random_forest/random_forest_9.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
-            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in'
+            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in', 'at', 'hct'
         ]
     },
     

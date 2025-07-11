@@ -138,7 +138,8 @@ def main():
     boolean_columns = [
         'dm', 'gagal_jantung', 'hyperdense', 'hipertensi', 'af', 'hemiparesis',
         'hemihipestesi_parestesia', 'paresis_nervus_kranialis', 'deviasi_konjugat',
-        'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in_(di_atas_6)', 'nihss_in_(di_atas_10)'
+        'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in_(di_atas_6)', 'nihss_in_(di_atas_10)', 
+        'ddimer_(di_atas_500)'
     ]
 
     tabular_input = {}
