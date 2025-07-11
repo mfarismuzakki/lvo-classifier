@@ -34,7 +34,7 @@ MODEL_CONFIGS = [
         ]
     },
     {
-        "name": "Model 2 RF (Acc 83.87%)",
+        "name": "Model 2 RF (Acc 90.32%)",
         "require_ct": True,
         "path": "ml_model/random_forest/random_forest_2.sav",
         "columns": [
@@ -46,7 +46,7 @@ MODEL_CONFIGS = [
         ]
     },
     {
-        "name": "Model 7 RF (Acc 74.19%)",
+        "name": "Model 7a RF (Acc 83.87%)",
         "require_ct": True,
         "path": "ml_model/random_forest/random_forest_7.sav",
         "columns": [
@@ -65,7 +65,7 @@ MODEL_CONFIGS = [
         ]
     },
     {
-        "name": "Model 9 RF (Acc 64.52%)",
+        "name": "Model 9 RF (Acc 80.65%)",
         "require_ct": False,
         "path": "ml_model/random_forest/random_forest_9.sav",
         "columns": [
