@@ -47,7 +47,7 @@ MODEL_CONFIGS = [
 
     {
         "name": "Bivariate Tanpa D-dimer RF (Acc 80.65%)",
-        "require_ct": False,
+        "require_ct": True,
         "path": "ml_model/random_forest/random_forest_7b.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
@@ -58,7 +58,7 @@ MODEL_CONFIGS = [
 
     {
         "name": "Bivariate Tanpa D-dimer MLP (Acc 83.87%)",
-        "require_ct": False,
+        "require_ct": True,
         "path": "ml_model/mlp/mlp_7b.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
