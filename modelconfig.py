@@ -51,7 +51,8 @@ MODEL_CONFIGS = [
         "path": "ml_model/random_forest/random_forest_7b.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
-            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in'
+            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
+            'ct_mca', 'ct_insula'
         ]
     },
 
@@ -61,7 +62,8 @@ MODEL_CONFIGS = [
         "path": "ml_model/mlp/mlp_7b.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
-            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in'
+            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
+            'ct_mca', 'ct_insula'
         ]
     },
 
