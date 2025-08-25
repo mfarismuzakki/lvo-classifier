@@ -43,6 +43,28 @@ MODEL_CONFIGS = [
             'ddimer_(di_atas_500)', 'ct_mca', 'ct_insula'
         ]
     },
+
+
+    {
+        "name": "Bivariate Tanpa D-dimer RF (Acc 80.65%)",
+        "require_ct": False,
+        "path": "ml_model/random_forest/random_forest_7b.sav",
+        "columns": [
+            'hemiparesis', 'hemihipestesi_parestesia',
+            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in'
+        ]
+    },
+
+    {
+        "name": "Bivariate Tanpa D-dimer MLP (Acc 83.87%)",
+        "require_ct": False,
+        "path": "ml_model/mlp/mlp_7b.sav",
+        "columns": [
+            'hemiparesis', 'hemihipestesi_parestesia',
+            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in'
+        ]
+    },
+
     {
         "name": "Pre Hospital RF (Acc 80.65%)",
         "require_ct": False,
