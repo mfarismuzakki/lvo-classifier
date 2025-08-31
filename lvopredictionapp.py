@@ -14,6 +14,8 @@ import dicom2nifti
 import plotly.graph_objects as go
 from modelconfig import MODEL_CONFIGS
 
+dicom2nifti.settings.disable_validate_slice_increment()
+
 # Streamlit app configuration
 st.set_page_config(
     page_title="LVO Classifier",
