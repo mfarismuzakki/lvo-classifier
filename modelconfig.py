@@ -40,7 +40,18 @@ MODEL_CONFIGS = [
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia', 'deviasi_konjugat',
             'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
-            'ddimer_(di_atas_500)', 'ct_mca', 'ct_insula'
+            'neutrofil', 'nlr', 'ct_mca', 'ct_insula'
+        ]
+    },
+
+    {
+        "name": "Selected Variable RF (Acc 87.10%)",
+        "require_ct": True,
+        "path": "ml_model/random_forest/random_forest_4b.sav",
+        "columns": [
+            'hemiparesis', 'hemihipestesi_parestesia',
+            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
+            'neutrofil', 'nlr', 'ct_mca', 'ct_insula'
         ]
     },
 
