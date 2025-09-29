@@ -45,13 +45,24 @@ MODEL_CONFIGS = [
     },
 
     {
-        "name": "Selected Variable RF (Acc 87.10%)",
+        "name": "Selected Variable RF Neutrofil + NLR (Acc 87.10%)",
         "require_ct": True,
         "path": "ml_model/random_forest/random_forest_4b.sav",
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
             'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
             'neutrofil', 'nlr', 'ct_mca', 'ct_insula'
+        ]
+    },
+
+    {
+        "name": "Selected Variable RF NLR (Acc 83.87%)",
+        "require_ct": True,
+        "path": "ml_model/random_forest/random_forest_4c.sav",
+        "columns": [
+            'hemiparesis', 'hemihipestesi_parestesia',
+            'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
+            'nlr', 'ct_mca', 'ct_insula'
         ]
     },
 
