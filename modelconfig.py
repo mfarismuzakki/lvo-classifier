@@ -77,7 +77,7 @@ MODEL_CONFIGS = [
         "columns": [
             'hemiparesis', 'hemihipestesi_parestesia',
             'deviasi_konjugat', 'afasia', 'gcs_code_(kesadaran_menurun)', 'nihss_in',
-            'nc', 'nlr', 'ct_mca', 'ct_insula'
+            'nlr', 'nc', 'ct_mca', 'ct_insula'
         ]
     },
 
