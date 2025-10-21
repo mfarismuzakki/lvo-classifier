@@ -12,7 +12,7 @@ from keras.models import load_model
 import joblib
 import dicom2nifti
 import plotly.graph_objects as go
-from modelconfig import MODEL_CONFIGS
+from modelconfig import MODEL_CONFIGS, FIELD_PLACEHOLDERS
 
 dicom2nifti.settings.disable_validate_slice_increment()
 
@@ -146,17 +146,29 @@ def main():
 
     tabular_input = {}
     if 'jenis_kelamin' in columns_selected:
-        jk = st.sidebar.selectbox("Jenis kelamin", ["Pria", "Wanita"])
+        jk = st.sidebar.selectbox(
+            "Jenis kelamin", 
+            ["Pria", "Wanita"],
+            help=FIELD_PLACEHOLDERS.get('jenis_kelamin', '')
+        )
         tabular_input['jenis_kelamin'] = 1 if jk == "Pria" else 0
 
     for col in columns_selected:
         if col == 'jenis_kelamin':
             continue
         if col in boolean_columns:
-            val = st.sidebar.selectbox(col.replace('_', ' ').capitalize(), ["Ya", "Tidak"])
+            val = st.sidebar.selectbox(
+                col.replace('_', ' ').capitalize(), 
+                ["Ya", "Tidak"],
+                help=FIELD_PLACEHOLDERS.get(col, '')
+            )
             tabular_input[col] = 1 if val == "Ya" else 0
         elif not col.startswith('ct_'):
-            tabular_input[col] = st.sidebar.number_input(col.replace('_', ' ').capitalize(), value=0.0)
+            tabular_input[col] = st.sidebar.number_input(
+                col.replace('_', ' ').capitalize(), 
+                value=0.0,
+                help=FIELD_PLACEHOLDERS.get(col, '')
+            )
 
     # --- Classification ---
     if st.sidebar.button("Classify"):
