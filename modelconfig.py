@@ -17,10 +17,10 @@ FIELD_DISPLAY_NAMES = {
     'nihss_in_(di_atas_6)': 'NIHSS In (di atas 6)',
     'nihss_in_(di_atas_10)': 'NIHSS In (di atas 10)',
     'ddimer_(di_atas_500)': 'D-Dimer (di atas 500)',
-    'hct': 'Hct (%)',
-    'at': 'AT (x 10³/µL)',
+    'hct': 'Hematocrit (%)',
+    'at': 'Thrombocyte (x 10³/µL)',
     'nlr': 'NLR',
-    'nc': 'NC (x 10³/µL)',
+    'nc': 'Absolute Neutrophil Count (x 10³/µL)',
     'neutrofil': 'Neutrofil',
     'leukosit': 'Leukosit',
 }
