@@ -1,31 +1,32 @@
-# Placeholder configuration for input fields
-FIELD_PLACEHOLDERS = {
-    # 'usia': 'Tahun',
-    # 'jenis_kelamin': 'Pilih jenis kelamin',
-    # 'dm': 'Apakah pasien memiliki diabetes mellitus?',
-    # 'gagal_jantung': 'Apakah pasien memiliki gagal jantung?',
-    # 'hyperdense': 'Apakah terdapat tanda hyperdense?',
-    # 'hipertensi': 'Apakah pasien memiliki hipertensi?',
-    # 'af': 'Apakah pasien memiliki atrial fibrilasi?',
-    # 'hemiparesis': 'Apakah terdapat hemiparesis?',
-    # 'hemihipestesi_parestesia': 'Apakah terdapat hemihipestesi/parestesia?',
-    # 'paresis_nervus_kranialis': 'Apakah terdapat paresis nervus kranialis?',
-    # 'deviasi_konjugat': 'Apakah terdapat deviasi konjugat?',
-    # 'afasia': 'Apakah terdapat afasia?',
-    # 'gcs_code_(kesadaran_menurun)': 'Apakah kesadaran menurun?',
-    # 'nihss_in': 'Masukkan nilai NIHSS (contoh: 8)',
-    # 'nihss_in_(di_atas_6)': 'Apakah NIHSS di atas 6?',
-    # 'nihss_in_(di_atas_10)': 'Apakah NIHSS di atas 10?',
-    # 'ddimer_(di_atas_500)': 'Apakah D-Dimer di atas 500?',
-    'hct': '%',
-    'at': 'x 10^3/µL',
-    # 'nlr': 'Masukkan nilai neutrophil-lymphocyte ratio (contoh: 3.5)',
-    'nc': 'x 10^3/µL',
-    # 'neutrofil': 'Masukkan nilai neutrofil (contoh: 75)',
-    # 'leukosit': 'Masukkan nilai leukosit (contoh: 9500)',
-    # 'ct_mca': 'Nilai CT MCA (otomatis dari gambar)',
-    # 'ct_insula': 'Nilai CT Insula (otomatis dari gambar)'
+# Custom display names for input fields
+FIELD_DISPLAY_NAMES = {
+    'usia': 'Usia',
+    'jenis_kelamin': 'Jenis Kelamin',
+    'dm': 'DM',
+    'gagal_jantung': 'Gagal Jantung',
+    'hyperdense': 'Hyperdense',
+    'hipertensi': 'Hipertensi',
+    'af': 'AF',
+    'hemiparesis': 'Hemiparesis',
+    'hemihipestesi_parestesia': 'Hemihipestesi/Parestesia',
+    'paresis_nervus_kranialis': 'Paresis Nervus Kranialis',
+    'deviasi_konjugat': 'Deviasi Konjugat',
+    'afasia': 'Afasia',
+    'gcs_code_(kesadaran_menurun)': 'GCS Code (Kesadaran Menurun)',
+    'nihss_in': 'NIHSS In',
+    'nihss_in_(di_atas_6)': 'NIHSS In (di atas 6)',
+    'nihss_in_(di_atas_10)': 'NIHSS In (di atas 10)',
+    'ddimer_(di_atas_500)': 'D-Dimer (di atas 500)',
+    'hct': 'Hct (%)',
+    'at': 'AT (x 10³/µL)',
+    'nlr': 'NLR',
+    'nc': 'NC (x 10³/µL)',
+    'neutrofil': 'Neutrofil',
+    'leukosit': 'Leukosit',
 }
+
+# Placeholder configuration for input fields (help tooltip)
+FIELD_PLACEHOLDERS = {}
 
 MODEL_CONFIGS = [
     {
